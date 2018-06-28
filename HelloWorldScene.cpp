@@ -90,36 +90,11 @@ bool HelloWorld::init()
 	return true;
 }
 void HelloWorld::update(float dt) {//调度函数 
-	int win = judgeWinCondition();//判断胜利
-	if (win != 0)
-	{
-		if (win == 1) GameEnd(1);
-		if (win == 2) GameEnd(2);
-	}
-	Vec2 currentplace1 = _playerMe->getPosition();    //判断掉血
+	
 	ProgressTimer *pBloodProGress1 = (ProgressTimer*)_playerMe->getChildByTag(20);
 	float currentblood1 = pBloodProGress1->getPercentage();
-	if (judgePlayerBloodDrop(currentplace1)) 
-	{
-		currentblood1 -= 0.1f;
-	}
-	else
-	{
-	    currentblood1+=0.1f;
-	}
-	
-	this->setViewpointCenter(currentplace1);          //玩家置中
-	Vec2 currentplace2 = _playerTa->getPosition();
 	ProgressTimer *pBloodProGress2 = (ProgressTimer*)_playerTa->getChildByTag(20);
 	float currentblood2 = pBloodProGress2->getPercentage();
-	if (judgePlayerBloodDrop(currentplace2))
-	{
-		currentblood2 -= 0.1f;
-	}
-	else
-	{
-		currentblood2 += 0.1f;
-	}
 	if (a1 != 0) //有消息传入
 	{
 		if (a1 != player) //非自己消息
@@ -143,13 +118,44 @@ void HelloWorld::update(float dt) {//调度函数
 	}
 	pBloodProGress1->setPercentage(currentblood1);
 	pBloodProGress2->setPercentage(currentblood2);
-	
+
+	this->setViewpointCenter(_playerMe->getPosition());          //玩家置中
 }
 void HelloWorld::updateCustom(float dt)
 {
-	Vec2 currentplace = _playerMe->getPosition();   //发送当前位置
-	write(player,0,currentplace.x,currentplace.y);   //（玩家，技能，x，y）
+
+	Vec2 currentplace1 = _playerMe->getPosition();     //发送当前位置
+	write(player,0,currentplace1.x,currentplace1.y);   //（玩家，技能，x，y）
+	int win = judgeWinCondition();//判断胜利
+	if (win != 0)
+	{
+		if (win == 1) GameEnd(1);
+		if (win == 2) GameEnd(2);
+	}
 	
+	ProgressTimer *pBloodProGress1 = (ProgressTimer*)_playerMe->getChildByTag(20);  //判断掉血
+	float currentblood1 = pBloodProGress1->getPercentage();
+	if (judgePlayerBloodDrop(currentplace1)) 
+	{
+		currentblood1 -= 0.5f;
+	}
+	else
+	{
+	    currentblood1+=  0.5f;
+	}
+	Vec2 currentplace2 = _playerTa->getPosition();
+	ProgressTimer *pBloodProGress2 = (ProgressTimer*)_playerTa->getChildByTag(20);
+	float currentblood2 = pBloodProGress2->getPercentage();
+	if (judgePlayerBloodDrop(currentplace2))
+	{
+		currentblood2 -= 0.5f;
+	}
+	else
+	{
+		currentblood2 += 0.5f;
+	}
+	pBloodProGress1->setPercentage(currentblood1);
+	pBloodProGress2->setPercentage(currentblood2);
 }
 bool HelloWorld::onTouchBegan(Touch* touch, Event* event)
 {
