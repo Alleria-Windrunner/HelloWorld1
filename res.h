@@ -11,4 +11,5 @@ extern float a2;
 extern float b2;
 extern char s_message[10];
 extern int answer;
+extern int mapnum;
 #endif

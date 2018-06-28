@@ -29,8 +29,14 @@ bool HelloWorld::init()
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-	_tileMap = TMXTiledMap::create("map/MiddleMap.tmx");
+	if(mapnum==1)
+	{ 
+		_tileMap = TMXTiledMap::create("map/MiddleMap1.tmx");
+	}
+	else if(mapnum==2)
+	{
+		_tileMap = TMXTiledMap::create("map/MiddleMap2.tmx");
+	}
 	addChild(_tileMap,0,100);
 
 	TMXObjectGroup* group = _tileMap->getObjectGroup("objects");
@@ -84,6 +90,12 @@ bool HelloWorld::init()
 	return true;
 }
 void HelloWorld::update(float dt) {//调度函数 
+	int win = judgeWinCondition();//判断胜利
+	if (win != 0)
+	{
+		if (win == 1) GameEnd(1);
+		if (win == 2) GameEnd(2);
+	}
 	Vec2 currentplace1 = _playerMe->getPosition();    //判断掉血
 	ProgressTimer *pBloodProGress1 = (ProgressTimer*)_playerMe->getChildByTag(20);
 	float currentblood1 = pBloodProGress1->getPercentage();
@@ -93,7 +105,7 @@ void HelloWorld::update(float dt) {//调度函数
 	}
 	else
 	{
-	    currentblood1+=0.2f;
+	    currentblood1+=0.1f;
 	}
 	
 	this->setViewpointCenter(currentplace1);          //玩家置中
@@ -106,7 +118,7 @@ void HelloWorld::update(float dt) {//调度函数
 	}
 	else
 	{
-		currentblood2 += 0.2f;
+		currentblood2 += 0.1f;
 	}
 	if (a1 != 0) //有消息传入
 	{
@@ -131,17 +143,13 @@ void HelloWorld::update(float dt) {//调度函数
 	}
 	pBloodProGress1->setPercentage(currentblood1);
 	pBloodProGress2->setPercentage(currentblood2);
+	
 }
 void HelloWorld::updateCustom(float dt)
 {
 	Vec2 currentplace = _playerMe->getPosition();   //发送当前位置
 	write(player,0,currentplace.x,currentplace.y);   //（玩家，技能，x，y）
-	int win = judgeWinCondition();//判断胜利
-	if (win != 0)
-	{
-		if (win == 1) GameEnd(1);
-		if (win == 2) GameEnd(2);
-	}
+	
 }
 bool HelloWorld::onTouchBegan(Touch* touch, Event* event)
 {
@@ -161,10 +169,11 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *event)
 	Vec2 touchLocation = touch->getLocation();
 	//转换为当前层的模型坐标系
 	touchLocation = this->convertToNodeSpace(touchLocation);
+	/*
 
 	Vec2 playerPos = _playerMe->getPosition();
 	Vec2 diff = touchLocation - playerPos;
-
+	
 	if (abs(diff.x) > abs(diff.y)) {
 		if (diff.x > 0) {
 			playerPos.x += _tileMap->getTileSize().width;
@@ -179,7 +188,7 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *event)
 		} else {
 			playerPos.y -= _tileMap->getTileSize().height;
 		}
-	}
+	}*/
 	//this->setPlayerPosition(playerPos);只移动一格
 	this->setPlayerPosition(touchLocation);
 }
@@ -230,6 +239,12 @@ void HelloWorld::setPlayerPosition(Vec2 position)
 	double moveY = position.y - _playerMe->getPosition().y;
 	double move = sqrt(moveX*moveX + moveY*moveY);
 	_playerMe->cocos2d::Node::stopAllActions();
+	if (moveX > 0) {
+		_playerMe->runAction(FlipX::create(false));
+	}
+	else {
+		_playerMe->runAction(FlipX::create(true));
+	}//翻转角色
 	_playerMe->runAction(MoveTo::create(move/100, position));
 	//滚动地图
 	this->setViewpointCenter(_playerMe->getPosition());
@@ -332,4 +347,9 @@ void HelloWorld::GameEnd(int end)
 	Scene * sc = End::createScene();
 	Director::getInstance()->replaceScene(sc);
 	
+}
+
+void HelloWorld::cleanup() 
+{
+	Layer::cleanup();
 }
