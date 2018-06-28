@@ -38,7 +38,7 @@ bool Setting::init()
     bg->setPosition(Vec2(origin.x + visibleSize.width/2,
                              origin.y + visibleSize.height /2));
     this->addChild(bg);
-
+	mapnum = 0;    //初始地图选项
 	/*
 	//音效
     auto soundOnMenuItem = MenuItemImage::create(
@@ -79,25 +79,39 @@ bool Setting::init()
 		CC_CALLBACK_1(Setting::menuPlayer2Callback, this));
 	item2->setColor(ccc3(0, 0, 0));
 	item2->setPosition(Director::getInstance()->convertToGL(Vec2(500, 360)));
+	item3 = MenuItemFont::create("Map1",
+		CC_CALLBACK_1(Setting::menuMap1Callback, this));
+	item3->setColor(ccc3(0, 0, 0));
+	item3->setPosition(Director::getInstance()->convertToGL(Vec2(800, 220)));
+	item4 = MenuItemFont::create("Map2",
+		CC_CALLBACK_1(Setting::menuMap2Callback, this));
+	item4->setColor(ccc3(0, 0, 0));
+	item4->setPosition(Director::getInstance()->convertToGL(Vec2(800, 360)));
     //Ok按钮
-	auto okMenuItem  = MenuItemImage::create( 
+	okMenuItem  = MenuItemImage::create( 
                              "ok-down.png",
                              "ok-up.png",
 							 CC_CALLBACK_1(Setting::menuOkCallback, this));
 
 	okMenuItem->setPosition(Director::getInstance()->convertToGL(Vec2(600, 510)));
 
-    Menu* mn = Menu::create(item1,item2,okMenuItem, NULL);
+    Menu* mn = Menu::create(item1,item2,item3,item4,okMenuItem, NULL);
 	mn->setPosition(Vec2::ZERO);
     this->addChild(mn);
+	item3->setEnabled(false);
+	item4->setEnabled(false);
+	okMenuItem->setEnabled(false);
 	thread__();
-	this->schedule(schedule_selector(Setting::updateCustom), 0.1f, kRepeatForever, 0);
+	this->schedule(schedule_selector(Setting::updateCustom), 0.012f, kRepeatForever, 0);
 	this->scheduleUpdate();
     return true;
 }
 void Setting::updateCustom(float dt)
 {
-	
+	if (mapnum != 0)
+	{
+		okMenuItem->setEnabled(true);
+	}
 	a1 = int(a1); b1 = int(b1);
 	log("%d %d", a1, b1);
 	if (a1 != playerchoose && a1!=0)     //判断是否为对方发的
@@ -123,7 +137,19 @@ void Setting::updateCustom(float dt)
 				}
 			}
 		}
-		else //对方已确定
+		else if (b1 == 3) //对方选第一张图
+		{
+			mapnum = 1;
+			item3->setColor(ccc3(0, 0, 255));
+			item4->setColor(ccc3(0, 0, 0));
+		}
+		else if(b1==4)
+		{
+			mapnum = 2;
+			item3->setColor(ccc3(0, 0, 0));
+			item4->setColor(ccc3(0, 0, 255));
+		}
+		else if(b1==1) //对方已确定
 		{
 			if (decide_me == false)   //我方未确定
 			{
@@ -133,16 +159,19 @@ void Setting::updateCustom(float dt)
 					item1->setEnabled(false);
 					item2->setEnabled(true);
 				}
-				if (b1 == 2)
+				if (a1 == 2)
 				{
 					item2->setColor(ccc3(0, 255, 0));
 					item2->setEnabled(false);
 					item1->setEnabled(true);
 				}
+				item3->setEnabled(false);
+				item4->setEnabled(false);
 			}
 			decide_ta = true;
 		}
 	}
+	a1 = 0; b1 = 0;
 	
 }
 void Setting::update(float dt)
@@ -159,6 +188,11 @@ void Setting::menuPlayer1Callback(Ref* pSender)
 	item1->setColor(ccc3(0,0,255));
 	item2->setColor(ccc3(0, 0, 0));
 	write(1.0f,0.0f);
+	if(!decide_ta)
+	{ 
+		item3->setEnabled(true);
+		item4->setEnabled(true);
+	}
 	log("menuPlayer1Callback");
 }
 void Setting::menuPlayer2Callback(Ref* pSender)
@@ -167,7 +201,26 @@ void Setting::menuPlayer2Callback(Ref* pSender)
 	item1->setColor(ccc3(0, 0, 0));
 	item2->setColor(ccc3(0, 0, 255));
 	write(2.0f,0.0f);
+	if (!decide_ta)
+	{
+		item3->setEnabled(true);
+		item4->setEnabled(true);
+	}
 	log("menuPlayer2Callback");
+}
+void Setting::menuMap1Callback(Ref* pSender)
+{
+	mapnum = 1;
+	item3->setColor(ccc3(0, 0, 255));
+	item4->setColor(ccc3(0, 0, 0));
+	write(playerchoose, 3.0f);
+}
+void Setting::menuMap2Callback(Ref* pSender)
+{
+	mapnum = 2;
+	item3->setColor(ccc3(0, 0, 0));
+	item4->setColor(ccc3(0, 0, 255));
+	write(playerchoose, 4.0f);
 }
 void Setting::menuOkCallback(Ref* pSender)
 {

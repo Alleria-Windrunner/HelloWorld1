@@ -4,6 +4,7 @@
 
 #include "cocos2d.h"
 #include "HelloWorldScene.h"
+#include "res.h"
 
 
 class Setting : public cocos2d::Layer
@@ -29,6 +30,8 @@ public:
 	void menuGo();
 	void menuPlayer1Callback(cocos2d::Ref* pSender);
 	void menuPlayer2Callback(cocos2d::Ref* pSender);
+	void menuMap1Callback(Ref* pSender);
+	void menuMap2Callback(Ref* pSender);
     
     // implement the "static create()" method manually
     CREATE_FUNC(Setting);
@@ -38,6 +41,9 @@ private:
 	bool decide_ta;
 	cocos2d::MenuItemFont *item1;
 	cocos2d::MenuItemFont *item2;
+	cocos2d::MenuItemFont *item3;
+	cocos2d::MenuItemFont *item4;
+	cocos2d::MenuItemImage * okMenuItem;
 };
 
 #endif // __Setting_SCENE_H__

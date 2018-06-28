@@ -24,7 +24,8 @@ bool StartScene::init()
 	{
 		return false;
 	}
-
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("MainTheme.wav");
+	
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
@@ -49,7 +50,16 @@ bool StartScene::init()
 	connect();
 	return true;
 }
-
+void StartScene::onEnterTransitionDidFinsh(Ref* pSender)
+{
+	Layer::onEnterTransitionDidFinish();
+	
+	
+}
+void StartScene::cleanup()
+{
+	Layer::cleanup();
+}
 
 void StartScene::menuItem1Callback(Ref* pSender)
 {

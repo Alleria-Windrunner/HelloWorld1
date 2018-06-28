@@ -3,7 +3,7 @@
 #define __End_SCENE_H__
 
 #include "cocos2d.h"
-#include "HelloWorldScene.h"
+#include "StartScene.h"
 
 class End : public cocos2d::Layer
 {
@@ -12,11 +12,15 @@ public:
     static cocos2d::Scene* createScene();
 
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
-    virtual bool init();  
+    virtual bool init();
+
+	virtual void cleanup();
     
     // a selector callback
+	void onEnterTransitionDidFinsh(Ref* pSender);
 	void menuAnswerCallback(Ref* pSender);
-	void menuOkCallback(cocos2d::Ref* pSender);
+	void meunAgainCallback(Ref* pSender);
+	void menuOkCallback(Ref* pSender);
     
     // implement the "static create()" method manually
     CREATE_FUNC(End);
